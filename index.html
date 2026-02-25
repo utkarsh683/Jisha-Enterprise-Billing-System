@@ -284,12 +284,6 @@
             vertical-align: middle;
         }
         
-        .badge {
-            padding: 6px 12px;
-            font-weight: 500;
-            border-radius: 20px;
-        }
-        
         /* Form Styling */
         .form-control, .form-select {
             border-radius: 8px;
@@ -643,7 +637,6 @@
                                             <th>Customer</th>
                                             <th>Items</th>
                                             <th>Amount</th>
-                                            <th>Payment Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -1116,7 +1109,6 @@
                                         <th>Customer</th>
                                         <th>Items</th>
                                         <th>Amount</th>
-                                        <th>Payment Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1197,7 +1189,6 @@
                                         <th>Total</th>
                                         <th>Paid</th>
                                         <th>Balance</th>
-                                        <th>Payment Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -1527,8 +1518,6 @@
             
             billsArray.forEach(bill => {
                 const servicesList = bill.services.slice(0, 2).map(s => s.customName || s.name).join(', ');
-                const statusClass = bill.balance > 0 ? 'warning' : 'success';
-                const statusText = bill.balance > 0 ? 'Pending' : 'Paid';
                 
                 html += `
                     <tr>
@@ -1537,7 +1526,6 @@
                         <td>${bill.customerName}</td>
                         <td>${servicesList}${bill.services.length > 2 ? '...' : ''}</td>
                         <td class="amount-display">₹${bill.total.toLocaleString('en-IN')}</td>
-                        <td><span class="badge bg-${statusClass}">${statusText}</span></td>
                         <td>
                             <button class="btn btn-sm btn-info me-1" onclick="viewBillDetails('${bill.id}')" title="View Receipt">
                                 <i class="fas fa-eye eye-icon"></i>
@@ -1798,7 +1786,6 @@
                 profit: total - totalCost,
                 paymentMethod: document.getElementById('paymentMethod').value,
                 notes: document.getElementById('notes').value,
-                status: balance > 0 ? 'pending' : 'paid',
                 createdAt: new Date().toISOString()
             };
         }
@@ -1933,8 +1920,7 @@
                         <div class="col-md-6 text-end">
                             <h5>Bill Details:</h5>
                             <p><strong>Invoice No:</strong> ${bill.invoiceNumber || bill.billNumber}<br>
-                            <strong>Date:</strong> ${bill.date}<br>
-                            <strong>Payment Status:</strong> <span class="badge ${bill.balance > 0 ? 'bg-warning' : 'bg-success'}">${bill.balance > 0 ? 'Pending' : 'Paid'}</span></p>
+                            <strong>Date:</strong> ${bill.date}</p>
                         </div>
                     </div>
                     
@@ -2608,7 +2594,7 @@
         
         function exportBillsToExcel() {
             const wsData = [
-                ['Invoice No', 'Date', 'Customer Name', 'Phone', 'Items', 'Subtotal', 'Discount', 'Tax', 'Total', 'Advance', 'Balance', 'Payment Method', 'Payment Status']
+                ['Invoice No', 'Date', 'Customer Name', 'Phone', 'Items', 'Subtotal', 'Discount', 'Tax', 'Total', 'Advance', 'Balance', 'Payment Method']
             ];
             
             bills.forEach(bill => {
@@ -2624,8 +2610,7 @@
                     bill.total,
                     bill.advance || 0,
                     bill.balance,
-                    bill.paymentMethod,
-                    bill.balance > 0 ? 'Pending' : 'Paid'
+                    bill.paymentMethod
                 ]);
             });
             
