@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jisha Enterprise - Billing System</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #f59e0b;
+            --accent-color: #10b981;
+            --dark-color: #1e3a8a;
+            --light-color: #eff6ff;
+            --krishna-blue: #1e3a8a;
+            --krishna-yellow: #fbbf24;
+            --bg-color: #f8fafc;
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        
+        .dark-mode {
+            --primary-color: #3b82f6;
+            --secondary-color: #f59e0b;
+            --accent-color: #10b981;
+            --dark-color: #1e3a8a;
+            --krishna-blue: #3b82f6;
+            --krishna-yellow: #fbbf24;
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --card-bg: #1e293b;
+            --sidebar-bg: #1e293b;
+            --border-color: #334155;
+            --light-color: #1e293b;
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        /* Navbar Styling */
+        .navbar-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--krishna-yellow) !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .krishna-logo {
+            background: linear-gradient(45deg, var(--krishna-blue), var(--dark-color));
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--krishna-yellow);
+            font-size: 1.5rem;
+            border: 2px solid var(--krishna-yellow);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-color);
+        }
+        
+        .dark-mode ::-webkit-scrollbar-track {
+            background: #334155;
+        }
+        
+        .sidebar {
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            min-height: calc(100vh - 70px);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .sidebar {
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar .nav-link {
+            color: var(--krishna-blue);
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: linear-gradient(45deg, var(--krishna-blue), var(--dark-color));
+            color: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+        }
+        
+        .sidebar .nav-link i {
+            width: 25px;
+            font-size: 1.2rem;
+        }
+        
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: var(--card-bg);
+            color: var(--text-color);
+            overflow: hidden;
+        }
+        
+        .dark-mode .card {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .card-header {
+            background: linear-gradient(45deg, var(--primary-color), var(--dark-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 15px 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 25px 15px;
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .stats-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .stats-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stats-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .stats-card.total { background: linear-gradient(135deg, #10b981, #059669); }
+        .stats-card.today { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .stats-card.month { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .stats-card.profit { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        
+        /* Button Styling */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--dark-color));
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #10b981, #059669);
+            border: none;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            border: none;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            border: none;
+        }
+        
+        .btn-info {
+            background: linear-gradient(45deg, #06b6d4, #0891b2);
+            border: none;
+            color: white;
+        }
+        
+        .btn-purple {
+            background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+            border: none;
+            color: white;
+        }
+        
+        /* Table Styling */
+        .table {
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .table th {
+            background-color: var(--light-color);
+            border-top: none;
+            font-weight: 600;
+            color: var(--krishna-blue);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+        
+        /* Form Styling */
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        /* Service Items */
+        .service-item {
+            background: var(--light-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        /* Date Filter */
+        .date-filter {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .dark-mode .date-filter {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        /* Bill Preview */
+        .bill-preview {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            color: #1e293b;
+        }
+        
+        .bill-header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .bill-header h2 {
+            color: var(--krishna-blue);
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        
+        .bill-header .subtitle {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .krishna-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid var(--krishna-yellow);
+            color: var(--krishna-blue);
+            font-style: italic;
+            font-weight: 500;
+        }
+        
+        /* Print Styles */
+        @media print {
+            .no-print { display: none !important; }
+            .bill-preview {
+                box-shadow: none;
+                padding: 0;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .theme-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+        
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-options {
+            position: absolute;
+            bottom: 60px;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+            min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .theme-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .theme-color:hover, .theme-color.active {
+            transform: scale(1.1);
+            border-color: white;
+        }
+        
+        /* Other Item Input */
+        .other-item-input {
+            display: none;
+        }
+        
+        /* Amount Display */
+        .amount-display {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
+            .stats-card h3 {
+                font-size: 1.5rem;
+            }
+            .theme-switcher {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(45deg, var(--primary-color), var(--dark-color));">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <div class="krishna-logo">
+                    <i class="fas fa-store"></i>
+                </div>
+                <span>Jisha Enterprise Billing System</span>
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-light btn-sm me-2 no-print" onclick="toggleDateFilter()">
+                    <i class="fas fa-calendar-alt"></i>
+                </button>
+                
+                <button class="btn btn-outline-light btn-sm me-2 no-print" onclick="exportAllData()">
+                    <i class="fas fa-file-export"></i>
+                </button>
+                
+                <button class="btn btn-outline-light btn-sm no-print" onclick="showCreateBill()">
+                    <i class="fas fa-plus"></i> New Bill
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Date Filter Panel -->
+    <div class="date-filter no-print" id="dateFilter" style="display: none;">
+        <div class="row">
+            <div class="col-md-3">
+                <label>From Date:</label>
+                <input type="date" class="form-control" id="filterFromDate">
+            </div>
+            <div class="col-md-3">
+                <label>To Date:</label>
+                <input type="date" class="form-control" id="filterToDate">
+            </div>
+            <div class="col-md-3">
+                <label>Filter Type:</label>
+                <select class="form-select" id="filterType">
+                    <option value="all">All Bills</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary me-2" onclick="applyDateFilter()">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+                <button class="btn btn-secondary" onclick="clearDateFilter()">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar d-md-block no-print">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="showDashboard()">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showCreateBill()">
+                                <i class="fas fa-file-invoice-dollar"></i> New Bill
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showAllBills()">
+                                <i class="fas fa-history"></i> Bill History
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showCustomers()">
+                                <i class="fas fa-users"></i> Customers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showServices()">
+                                <i class="fas fa-tools"></i> Products/Services
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showReports()">
+                                <i class="fas fa-chart-pie"></i> Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSettings()">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Quick Stats -->
+                    <div class="mt-5 p-3" style="background: var(--light-color); border-radius: 10px;">
+                        <h6 class="mb-3" style="color: var(--primary-color);">Quick Stats</h6>
+                        <div id="quickStats">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Total Bills:</span>
+                                <span class="fw-bold" id="statBills">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Today's Bills:</span>
+                                <span class="fw-bold" id="statToday">0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Revenue:</span>
+                                <span class="fw-bold" id="statRevenue">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Profit:</span>
+                                <span class="fw-bold" id="statProfit">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4 animate-fadeIn" id="mainContent">
+                <!-- Dashboard -->
+                <div id="contentArea">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 style="color: var(--primary-color); font-weight: 600;">Welcome to Jisha Enterprise</h2>
+                        <div>
+                            <button class="btn btn-primary me-2 no-print" onclick="showCreateBill()">
+                                <i class="fas fa-plus"></i> New Bill
+                            </button>
+                            <button class="btn btn-success no-print" onclick="downloadReport('pdf')">
+                                <i class="fas fa-download"></i> Download Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row mb-4" id="dashboardStats">
+                        <!-- Will be populated -->
+                    </div>
+                    
+                    <!-- Recent Bills -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-receipt"></i> Recent Bills</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice No</th>
+                                            <th>Date</th>
+                                            <th>Customer</th>
+                                            <th>Items</th>
+                                            <th>Amount</th>
+                                            <th>Payment Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentBillsBody">
+                                        <!-- Will be populated -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Theme Switcher -->
+    <div class="theme-switcher no-print">
+        <button class="theme-btn" style="background: var(--primary-color); color: white;" onclick="toggleThemeOptions()">
+            <i class="fas fa-palette"></i>
+        </button>
+        <div class="theme-options" id="themeOptions">
+            <h6 class="mb-2">Color Themes</h6>
+            <div>
+                <span class="theme-color active" style="background: #1e40af;" onclick="changeTheme('blue')" title="Blue Theme"></span>
+                <span class="theme-color" style="background: #059669;" onclick="changeTheme('green')" title="Green Theme"></span>
+                <span class="theme-color" style="background: #dc2626;" onclick="changeTheme('red')" title="Red Theme"></span>
+                <span class="theme-color" style="background: #7c3aed;" onclick="changeTheme('purple')" title="Purple Theme"></span>
+            </div>
+            <hr class="my-2">
+            <button class="btn btn-sm w-100 mb-2" onclick="toggleDarkMode()" style="background: var(--primary-color); color: white;">
+                <i class="fas fa-moon"></i> Dark Mode
+            </button>
+            <button class="btn btn-sm w-100" onclick="resetTheme()" style="background: var(--secondary-color); color: white;">
+                <i class="fas fa-sync-alt"></i> Reset Theme
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <!-- Create/Edit Bill Modal -->
+    <div class="modal fade" id="billModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Create New Bill</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="billForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Invoice Number</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">JISHA</span>
+                                        <input type="text" class="form-control" id="invoiceNumber" value="" readonly>
+                                    </div>
+                                    <small class="text-muted">Format: JISHAYYMMDD001 (YearMonthDaySequence)</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" class="form-control" id="billDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Customer Name *</label>
+                                    <input type="text" class="form-control" id="customerName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" id="customerPhone" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea class="form-control" id="customerAddress" rows="2"></textarea>
+                        </div>
+                        
+                        <!-- Items Section -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0"><i class="fas fa-box"></i> Products / Services</h6>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addServiceRow()">
+                                    <i class="fas fa-plus"></i> Add Item
+                                </button>      
+                            </div>
+                     
+                            <div class="card-body">
+                                <div id="servicesContainer">
+                                    <!-- Service rows will be added here -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary Section -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Discount (₹)</label>
+                                    <input type="number" class="form-control" id="discount" min="0" value="0" onchange="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Tax (%)</label>
+                                    <input type="number" class="form-control" id="tax" min="0" value="18" onchange="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Advance Paid (₹)</label>
+                                    <input type="number" class="form-control" id="advance" min="0" value="0" onchange="calculateTotal()">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Payment Method</label>
+                                    <select class="form-select" id="paymentMethod">
+                                        <option value="Cash">Cash</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="Card">Card</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Totals -->
+                        <div class="alert alert-info">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Subtotal: ₹<span id="subtotal">0</span></h6>
+                                    <h6>Tax: ₹<span id="taxAmount">0</span></h6>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <h4 class="text-primary">Total: ₹<span id="totalAmount">0</span></h4>
+                                    <h6>Balance Due: ₹<span id="balanceDue">0</span></h6>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" id="notes" rows="2"></textarea>
+                        </div>
+                        
+                        <input type="hidden" id="billId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" onclick="resetBillForm()">Reset Form</button>
+                    <button type="button" class="btn btn-primary" onclick="previewBill()">Preview</button>
+                    <button type="button" class="btn btn-success" id="saveBillBtn" onclick="saveBill()">Save Bill</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bill Preview Modal -->
+    <div class="modal fade" id="billPreviewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bill Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="billToPrint">
+                                <!-- Bill will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="printBill()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="downloadBillPDF()">
+                        <i class="fas fa-download"></i> PDF
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="sendBillToCustomer()">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- View Bill Modal -->
+    <div class="modal fade" id="viewBillModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">View Bill Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="viewBillContent">
+                    <!-- Bill details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profit/Loss Details Modal -->
+    <div class="modal fade" id="profitLossDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profitLossTitle">Profit & Loss Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="profitLossDetails">
+                    <!-- Details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Global variables
+        let bills = JSON.parse(localStorage.getItem('jishaBills')) || [];
+        let customers = JSON.parse(localStorage.getItem('jishaCustomers')) || [];
+        // Generic products/services for enterprise
+        let services = JSON.parse(localStorage.getItem('jishaServices')) || [
+            {id: '1', name: "Product A", price: 500, cost: 300},
+            {id: '2', name: "Product B", price: 1200, cost: 800},
+            {id: '3', name: "Service Consultation", price: 1000, cost: 400},
+            {id: '4', name: "Maintenance Contract", price: 3000, cost: 1500},
+            {id: '5', name: "Spare Part X", price: 800, cost: 500},
+            {id: '6', name: "Installation Service", price: 1500, cost: 700},
+            {id: '7', name: "Annual Maintenance", price: 2500, cost: 1200},
+            {id: '8', name: "Software License", price: 4000, cost: 2000},
+            {id: '9', name: "Other (Custom)", price: 0, cost: 0},
+            {id: '10', name: "Other item", price: 0, cost: 0}
+        ];
+        
+        let settings = JSON.parse(localStorage.getItem('jishaSettings')) || {
+            businessName: "Jisha Enterprise",
+            Owner: "Jisha Sharma",
+            businessPhone: "9876543210",
+            businessAddress: "456, Market Street, Coimbatore - 641001",
+            gstNumber: "33AAAAA0000A1Z5",
+            taxRate: 18,
+            currency: "₹",
+            footerNote: "Thank you for your business! Visit again.",
+            terms: "1. Payment due immediately.\n2. Goods once sold cannot be returned.\n3. Warranty as per company policy."
+        };
+        
+        let currentBill = null;
+        let isEditMode = false;
+        let currentBillId = null;
+        let currentTheme = localStorage.getItem('jishaTheme') || 'blue';
+        let isDarkMode = localStorage.getItem('jishaDarkMode') === 'true' || false;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('billDate').value = today;
+            
+            // Generate initial invoice number
+            generateInvoiceNumber();
+            
+            // Add first service row
+            addServiceRow();
+            
+            // Load dashboard
+            showDashboard();
+            
+            // Initialize date filter
+            initializeDateFilter();
+            
+            // Apply saved theme
+            applyTheme();
+            
+            // Apply dark mode if saved
+            if (isDarkMode) {
+                toggleDarkMode();
+            }
+        });
+        
+        // Theme Functions
+        function toggleThemeOptions() {
+            const options = document.getElementById('themeOptions');
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function changeTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('jishaTheme', theme);
+            
+            // Update active theme color
+            document.querySelectorAll('.theme-color').forEach(color => {
+                color.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Apply theme
+            applyTheme();
+        }
+        
+        function applyTheme() {
+            const root = document.documentElement;
+            
+            switch(currentTheme) {
+                case 'green':
+                    root.style.setProperty('--primary-color', '#059669');
+                    root.style.setProperty('--dark-color', '#065f46');
+                    break;
+                case 'red':
+                    root.style.setProperty('--primary-color', '#dc2626');
+                    root.style.setProperty('--dark-color', '#991b1b');
+                    break;
+                case 'purple':
+                    root.style.setProperty('--primary-color', '#7c3aed');
+                    root.style.setProperty('--dark-color', '#5b21b6');
+                    break;
+                case 'blue':
+                default:
+                    root.style.setProperty('--primary-color', '#1e40af');
+                    root.style.setProperty('--dark-color', '#1e3a8a');
+            }
+        }
+        
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('jishaDarkMode', isDarkMode);
+            
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            
+            // Update dark mode button text
+            const darkModeBtn = document.querySelector('[onclick="toggleDarkMode()"]');
+            if (darkModeBtn) {
+                darkModeBtn.innerHTML = isDarkMode ? 
+                    '<i class="fas fa-sun"></i> Light Mode' : 
+                    '<i class="fas fa-moon"></i> Dark Mode';
+            }
+        }
+        
+        function resetTheme() {
+            currentTheme = 'blue';
+            isDarkMode = false;
+            localStorage.setItem('jishaTheme', 'blue');
+            localStorage.setItem('jishaDarkMode', 'false');
+            
+            document.body.classList.remove('dark-mode');
+            applyTheme();
+            
+            // Reset theme colors
+            document.querySelectorAll('.theme-color').forEach(color => {
+                color.classList.remove('active');
+            });
+            document.querySelector('.theme-color[style*="background: #1e40af;"]').classList.add('active');
+        }
+        
+        // Date Filter Functions
+        function toggleDateFilter() {
+            const filter = document.getElementById('dateFilter');
+            filter.style.display = filter.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function initializeDateFilter() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('filterFromDate').value = today;
+            document.getElementById('filterToDate').value = today;
+        }
+        
+        function applyDateFilter() {
+            const fromDate = document.getElementById('filterFromDate').value;
+            const toDate = document.getElementById('filterToDate').value;
+            const filterType = document.getElementById('filterType').value;
+            
+            let filteredBills = [...bills];
+            
+            switch(filterType) {
+                case 'today':
+                    const today = new Date().toISOString().split('T')[0];
+                    filteredBills = bills.filter(bill => bill.date === today);
+                    break;
+                case 'yesterday':
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const yesterdayStr = yesterday.toISOString().split('T')[0];
+                    filteredBills = bills.filter(bill => bill.date === yesterdayStr);
+                    break;
+                case 'week':
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    filteredBills = bills.filter(bill => new Date(bill.date) >= weekAgo);
+                    break;
+                case 'month':
+                    const monthAgo = new Date();
+                    monthAgo.setMonth(monthAgo.getMonth() - 1);
+                    filteredBills = bills.filter(bill => new Date(bill.date) >= monthAgo);
+                    break;
+                case 'custom':
+                    filteredBills = bills.filter(bill => bill.date >= fromDate && bill.date <= toDate);
+                    break;
+            }
+            
+            if (document.getElementById('allBillsBody')) {
+                renderBillsTable(filteredBills, 'allBillsBody');
+            }
+        }
+        
+        function clearDateFilter() {
+            document.getElementById('filterFromDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('filterToDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('filterType').value = 'all';
+            
+            if (document.getElementById('allBillsBody')) {
+                showAllBills();
+            }
+        }
+        
+        // Navigation functions
+        function showDashboard() {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 style="color: var(--primary-color); font-weight: 600;">Dashboard</h2>
+                    <div>
+                        <button class="btn btn-primary me-2 no-print" onclick="showCreateBill()">
+                            <i class="fas fa-plus"></i> New Bill
+                        </button>
+                        <button class="btn btn-success no-print" onclick="downloadReport('pdf')">
+                            <i class="fas fa-download"></i> Report
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="row mb-4" id="dashboardStats">
+                    <!-- Stats will be loaded -->
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-receipt"></i> Recent Bills</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice No</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Items</th>
+                                        <th>Amount</th>
+                                        <th>Payment Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentBillsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadDashboard();
+        }
+        
+        function showCreateBill() {
+            isEditMode = false;
+            currentBillId = null;
+            
+            document.getElementById('modalTitle').textContent = 'Create New Bill';
+            document.getElementById('saveBillBtn').textContent = 'Save Bill';
+            document.getElementById('saveBillBtn').onclick = saveBill;
+            
+            // Reset form
+            resetBillForm();
+            
+            const modal = new bootstrap.Modal(document.getElementById('billModal'));
+            modal.show();
+        }
+        
+        function showEditBill(billId) {
+            isEditMode = true;
+            currentBillId = billId;
+            
+            const bill = bills.find(b => b.id === billId);
+            if (!bill) {
+                alert('Bill not found!');
+                return;
+            }
+            
+            document.getElementById('modalTitle').textContent = 'Edit Bill';
+            document.getElementById('saveBillBtn').textContent = 'Update Bill';
+            document.getElementById('saveBillBtn').onclick = updateBill;
+            
+            // Populate form
+            populateBillForm(bill);
+            
+            const modal = new bootstrap.Modal(document.getElementById('billModal'));
+            modal.show();
+        }
+        
+        function showAllBills() {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 style="color: var(--primary-color); font-weight: 600;">All Bills</h2>
+                    <div>
+                        <button class="btn btn-primary me-2" onclick="showCreateBill()">
+                            <i class="fas fa-plus"></i> New Bill
+                        </button>
+                        <button class="btn btn-success" onclick="exportBillsToExcel()">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Bill History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice No</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Paid</th>
+                                        <th>Balance</th>
+                                        <th>Payment Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allBillsBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadAllBills();
+        }
+        
+        function showCustomers() {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 style="color: var(--primary-color); font-weight: 600;">Customers</h2>
+                    <button class="btn btn-primary" onclick="addCustomer()">
+                        <i class="fas fa-plus"></i> Add Customer
+                    </button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-users"></i> Customer List</h5>
+                        <span class="badge bg-primary">${customers.length} Customers</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>Total Bills</th>
+                                        <th>Total Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customersBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadCustomers();
+        }
+        
+        function showServices() {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 style="color: var(--primary-color); font-weight: 600;">Products & Services</h2>
+                    <button class="btn btn-primary" onclick="addService()">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-box"></i> Item List</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Item Name</th>
+                                                <th>Price (₹)</th>
+                                                <th>Cost (₹)</th>
+                                                <th>Profit (₹)</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="servicesBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Item Statistics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="serviceStats">
+                                    <!-- Stats will be loaded -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            loadServices();
+        }
+        
+        function showReports() {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 style="color: var(--primary-color); font-weight: 600;">Profit & Loss Report</h2>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" onclick="showDailyReport()">
+                            <i class="fas fa-calendar-day"></i> Daily
+                        </button>
+                        <button class="btn btn-primary me-2" onclick="showMonthlyReport()">
+                            <i class="fas fa-calendar-alt"></i> Monthly
+                        </button>
+                        <button class="btn btn-success" onclick="downloadProfitLossExcel()">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stats-card total">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3 id="reportTotalRevenue">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card today" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                            <i class="fas fa-money-bill"></i>
+                            <h3 id="reportTotalCost">₹0</h3>
+                            <p>Total Cost</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card month">
+                            <i class="fas fa-chart-line"></i>
+                            <h3 id="reportNetProfit">₹0</h3>
+                            <p>Net Profit</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card profit">
+                            <i class="fas fa-percentage"></i>
+                            <h3 id="reportProfitMargin">0%</h3>
+                            <p>Profit Margin</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Profit Analysis Chart</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="profitChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detailed Report -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Detailed Report</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th id="reportPeriodHeader">Date</th>
+                                        <th>Revenue</th>
+                                        <th>Cost</th>
+                                        <th>Profit</th>
+                                        <th>Margin</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showMonthlyReport();
+        }
+        
+        function showSettings() {
+            document.getElementById('contentArea').innerHTML = `
+                <h2 class="mb-4" style="color: var(--primary-color); font-weight: 600;">Settings</h2>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cog"></i> Business Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Business Name</label>
+                                    <input type="text" class="form-control" id="businessName" value="${settings.businessName}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Numbers</label>
+                                    <input type="text" class="form-control" id="businessPhone" value="${settings.businessPhone}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Address</label>
+                                    <textarea class="form-control" id="businessAddress" rows="3">${settings.businessAddress}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">GST Number</label>
+                                    <input type="text" class="form-control" id="gstNumber" value="${settings.gstNumber}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Tax Rate (%)</label>
+                                    <input type="number" class="form-control" id="taxRate" value="${settings.taxRate}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Bill Footer Note</label>
+                                    <textarea class="form-control" id="footerNote" rows="3">${settings.footerNote}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Terms & Conditions</label>
+                            <textarea class="form-control" id="terms" rows="4">${settings.terms}</textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                            <button class="btn btn-secondary" onclick="resetSettings()">Reset</button>
+                            <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Dashboard functions
+        function loadDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const thisMonth = new Date().getMonth() + 1;
+            const thisYear = new Date().getFullYear();
+            
+            let totalRevenue = 0;
+            let todayRevenue = 0;
+            let monthRevenue = 0;
+            let totalProfit = 0;
+            let todayProfit = 0;
+            
+            bills.forEach(bill => {
+                totalRevenue += bill.total;
+                totalProfit += bill.profit || (bill.total * 0.4);
+                
+                if (bill.date === today) {
+                    todayRevenue += bill.total;
+                    todayProfit += bill.profit || (bill.total * 0.4);
+                }
+                
+                const billDate = new Date(bill.date);
+                if (billDate.getMonth() + 1 === thisMonth && billDate.getFullYear() === thisYear) {
+                    monthRevenue += bill.total;
+                }
+            });
+            
+            // Update stats cards
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="col-md-3">
+                    <div class="stats-card total">
+                        <i class="fas fa-rupee-sign"></i>
+                        <h3>₹${totalRevenue.toLocaleString('en-IN')}</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card today">
+                        <i class="fas fa-calendar-day"></i>
+                        <h3>₹${todayRevenue.toLocaleString('en-IN')}</h3>
+                        <p>Today's Revenue</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card month">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>₹${monthRevenue.toLocaleString('en-IN')}</h3>
+                        <p>This Month</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card profit">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>₹${Math.round(totalProfit).toLocaleString('en-IN')}</h3>
+                        <p>Total Profit</p>
+                    </div>
+                </div>
+            `;
+            
+            // Update quick stats
+            document.getElementById('statBills').textContent = bills.length;
+            document.getElementById('statToday').textContent = bills.filter(b => b.date === today).length;
+            document.getElementById('statRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
+            document.getElementById('statProfit').textContent = `₹${Math.round(totalProfit).toLocaleString('en-IN')}`;
+            
+            // Load recent bills
+            loadRecentBills();
+        }
+        
+        function loadRecentBills() {
+            const recentBills = bills.slice(-5).reverse();
+            renderBillsTable(recentBills, 'recentBillsBody', true);
+        }
+        
+        function loadAllBills() {
+            renderBillsTable(bills, 'allBillsBody', false);
+        }
+        
+        function renderBillsTable(billsArray, tableId, isRecent = false) {
+            let html = '';
+            
+            billsArray.forEach(bill => {
+                const servicesList = bill.services.slice(0, 2).map(s => s.customName || s.name).join(', ');
+                const statusClass = bill.balance > 0 ? 'warning' : 'success';
+                const statusText = bill.balance > 0 ? 'Pending' : 'Paid';
+                
+                html += `
+                    <tr>
+                        <td>${bill.invoiceNumber || bill.billNumber}</td>
+                        <td>${bill.date}</td>
+                        <td>${bill.customerName}</td>
+                        <td>${servicesList}${bill.services.length > 2 ? '...' : ''}</td>
+                        <td class="amount-display">₹${bill.total.toLocaleString('en-IN')}</td>
+                        <td><span class="badge bg-${statusClass}">${statusText}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-info me-1" onclick="viewBillDetails('${bill.id}')" title="View Receipt">
+                                <i class="fas fa-eye eye-icon"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning me-1" onclick="showEditBill('${bill.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success me-1" onclick="downloadBillPDFById('${bill.id}')" title="Download PDF">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success me-1" onclick="sendBillToCustomerById('${bill.id}')" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                            ${!isRecent ? `<button class="btn btn-sm btn-danger" onclick="deleteBill('${bill.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById(tableId).innerHTML = html;
+        }
+        
+        // Invoice Number Generation
+        function generateInvoiceNumber() {
+            const today = new Date();
+            const year = today.getFullYear().toString().substr(2, 2);
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const day = today.getDate().toString().padStart(2, '0');
+            
+            // Count today's bills for sequence
+            const todayBills = bills.filter(bill => {
+                const billDate = new Date(bill.date);
+                return billDate.getDate() === today.getDate() && 
+                       billDate.getMonth() === today.getMonth() && 
+                       billDate.getFullYear() === today.getFullYear();
+            });
+            
+            const sequence = (todayBills.length + 1).toString().padStart(3, '0');
+            const invoiceNumber = `JISHA${year}${month}${day}${sequence}`;
+            document.getElementById('invoiceNumber').value = invoiceNumber;
+        }
+        
+        // Bill Form Functions
+        function resetBillForm() {
+            document.getElementById('billForm').reset();
+            document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('servicesContainer').innerHTML = '';
+            addServiceRow();
+            generateInvoiceNumber();
+            calculateTotal();
+        }
+        
+        function populateBillForm(bill) {
+            document.getElementById('billId').value = bill.id;
+            document.getElementById('invoiceNumber').value = bill.invoiceNumber || bill.billNumber;
+            document.getElementById('billDate').value = bill.date;
+            document.getElementById('customerName').value = bill.customerName;
+            document.getElementById('customerPhone').value = bill.customerPhone;
+            document.getElementById('customerAddress').value = bill.customerAddress || '';
+            document.getElementById('discount').value = bill.discount || 0;
+            document.getElementById('tax').value = bill.tax || 18;
+            document.getElementById('advance').value = bill.advance || 0;
+            document.getElementById('paymentMethod').value = bill.paymentMethod || 'Cash';
+            document.getElementById('notes').value = bill.notes || '';
+            
+            // Clear and populate services
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = '';
+            
+            bill.services.forEach(service => {
+                const rowId = addServiceRow();
+                const row = document.getElementById(`serviceRow${rowId}`);
+                
+                if (row) {
+                    row.querySelector('.service-name').value = service.name;
+                    row.querySelector('.service-price').value = service.price || service.amount;
+                    row.querySelector('.service-qty').value = service.qty || 1;
+                    
+                    // Handle other item custom name
+                    if (service.customName && (service.name === "Other item" || service.name === "Other (Custom)")) {
+                        const otherInput = row.querySelector('.other-item-input');
+                        if (otherInput) {
+                            otherInput.style.display = 'block';
+                            otherInput.value = service.customName;
+                        }
+                    }
+                }
+            });
+            
+            calculateTotal();
+        }
+        
+        function addServiceRow() {
+            const container = document.getElementById('servicesContainer');
+            const rowId = Date.now();
+            
+            const row = document.createElement('div');
+            row.className = 'service-item';
+            row.id = `serviceRow${rowId}`;
+            row.innerHTML = `
+                <div class="row align-items-center">
+                    <div class="col-md-5">
+                        <select class="form-select service-name" onchange="updateServiceRow(this, '${rowId}')">
+                            <option value="">Select Item</option>
+                            ${services.map(s => `<option value="${s.name}" data-price="${s.price}">${s.name} (₹${s.price})</option>`).join('')}
+                        </select>
+                        <input type="text" class="form-control mt-2 other-item-input" placeholder="Enter custom item name" 
+                               id="otherItemInput${rowId}" onchange="updateOtherItemName('${rowId}')">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control service-price" placeholder="Price" min="0" value="0" onchange="calculateTotal()">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control service-qty" placeholder="Qty" min="1" value="1" onchange="calculateTotal()">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" class="form-control" placeholder="Total" readonly value="0" id="serviceTotal${rowId}">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeServiceRow('${rowId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(row);
+            calculateTotal();
+            return rowId;
+        }
+        
+        function updateServiceRow(select, rowId) {
+            const selectedOption = select.options[select.selectedIndex];
+            const selectedValue = selectedOption.value;
+            const price = selectedOption.getAttribute('data-price') || 0;
+            
+            const row = select.closest('.service-item');
+            const priceInput = row.querySelector('.service-price');
+            const otherInput = row.querySelector('.other-item-input');
+            
+            priceInput.value = price;
+            
+            // Show/hide other item input
+            if (selectedValue === "Other item" || selectedValue === "Other (Custom)") {
+                otherInput.style.display = 'block';
+            } else {
+                otherInput.style.display = 'none';
+                otherInput.value = '';
+            }
+            
+            calculateTotal();
+        }
+        
+        function updateOtherItemName(rowId) {
+            calculateTotal();
+        }
+        
+        function removeServiceRow(rowId) {
+            const row = document.getElementById(`serviceRow${rowId}`);
+            if (row && document.querySelectorAll('.service-item').length > 1) {
+                row.remove();
+                calculateTotal();
+            } else {
+                alert('At least one item is required');
+            }
+        }
+        
+        function calculateTotal() {
+            let subtotal = 0;
+            
+            document.querySelectorAll('.service-item').forEach(row => {
+                const price = parseFloat(row.querySelector('.service-price').value) || 0;
+                const qty = parseFloat(row.querySelector('.service-qty').value) || 1;
+                const total = price * qty;
+                subtotal += total;
+                
+                // Update individual service total
+                const rowId = row.id.replace('serviceRow', '');
+                const totalInput = document.getElementById(`serviceTotal${rowId}`);
+                if (totalInput) {
+                    totalInput.value = total;
+                }
+            });
+            
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const taxRate = parseFloat(document.getElementById('tax').value) || 0;
+            const advance = parseFloat(document.getElementById('advance').value) || 0;
+            
+            const taxAmount = (subtotal - discount) * (taxRate / 100);
+            const total = subtotal - discount + taxAmount;
+            const balance = total - advance;
+            
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('taxAmount').textContent = taxAmount.toFixed(2);
+            document.getElementById('totalAmount').textContent = total.toFixed(2);
+            document.getElementById('balanceDue').textContent = balance.toFixed(2);
+        }
+        
+        // Bill CRUD Operations
+        function getBillFormData() {
+            const services = [];
+            let totalCost = 0;
+            
+            document.querySelectorAll('.service-item').forEach(row => {
+                const name = row.querySelector('.service-name').value;
+                const price = parseFloat(row.querySelector('.service-price').value) || 0;
+                const qty = parseFloat(row.querySelector('.service-qty').value) || 1;
+                const amount = price * qty;
+                
+                let customName = '';
+                if (name === "Other item" || name === "Other (Custom)") {
+                    const otherInput = row.querySelector('.other-item-input');
+                    customName = otherInput ? otherInput.value : '';
+                }
+                
+                if ((name || customName) && amount > 0) {
+                    // Find service cost
+                    const service = services.find(s => s.name === name);
+                    const cost = service ? service.cost : (price * 0.6);
+                    totalCost += cost * qty;
+                    
+                    services.push({
+                        name,
+                        price,
+                        qty,
+                        amount,
+                        customName
+                    });
+                }
+            });
+            
+            const subtotal = parseFloat(document.getElementById('subtotal').textContent) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const tax = parseFloat(document.getElementById('tax').value) || 0;
+            const taxAmount = parseFloat(document.getElementById('taxAmount').textContent) || 0;
+            const advance = parseFloat(document.getElementById('advance').value) || 0;
+            const total = parseFloat(document.getElementById('totalAmount').textContent) || 0;
+            const balance = parseFloat(document.getElementById('balanceDue').textContent) || 0;
+            
+            return {
+                id: isEditMode ? document.getElementById('billId').value : Date.now().toString(),
+                invoiceNumber: document.getElementById('invoiceNumber').value,
+                date: document.getElementById('billDate').value,
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                customerAddress: document.getElementById('customerAddress').value,
+                services: services,
+                subtotal: subtotal,
+                discount: discount,
+                tax: tax,
+                taxAmount: taxAmount,
+                advance: advance,
+                total: total,
+                balance: balance,
+                cost: totalCost,
+                profit: total - totalCost,
+                paymentMethod: document.getElementById('paymentMethod').value,
+                notes: document.getElementById('notes').value,
+                status: balance > 0 ? 'pending' : 'paid',
+                createdAt: new Date().toISOString()
+            };
+        }
+        
+        function saveBill() {
+            const billData = getBillFormData();
+            
+            if (!validateBill(billData)) return;
+            
+            // Save customer
+            saveCustomer(billData);
+            
+            // Save bill
+            bills.push(billData);
+            localStorage.setItem('jishaBills', JSON.stringify(bills));
+            
+            alert('Bill saved successfully!');
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('billModal'));
+            modal.hide();
+            
+            showDashboard();
+        }
+        
+        function updateBill() {
+            const billData = getBillFormData();
+            
+            if (!validateBill(billData)) return;
+            
+            // Update bill
+            const index = bills.findIndex(b => b.id === billData.id);
+            if (index !== -1) {
+                bills[index] = billData;
+                localStorage.setItem('jishaBills', JSON.stringify(bills));
+                
+                alert('Bill updated successfully!');
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('billModal'));
+                modal.hide();
+                
+                if (document.getElementById('allBillsBody')) {
+                    showAllBills();
+                } else {
+                    showDashboard();
+                }
+            }
+        }
+        
+        function deleteBill(billId) {
+            if (confirm('Are you sure you want to delete this bill?')) {
+                bills = bills.filter(b => b.id !== billId);
+                localStorage.setItem('jishaBills', JSON.stringify(bills));
+                alert('Bill deleted successfully!');
+                showAllBills();
+            }
+        }
+        
+        function validateBill(billData) {
+            if (!billData.customerName.trim()) {
+                alert('Please enter customer name');
+                return false;
+            }
+            
+            if (!billData.customerPhone.trim() || billData.customerPhone.length < 10) {
+                alert('Please enter valid phone number');
+                return false;
+            }
+            
+            if (billData.services.length === 0) {
+                alert('Please add at least one item');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function saveCustomer(billData) {
+            const existingCustomer = customers.find(c => c.phone === billData.customerPhone);
+            if (!existingCustomer) {
+                customers.push({
+                    id: Date.now().toString(),
+                    name: billData.customerName,
+                    phone: billData.customerPhone,
+                    address: billData.customerAddress,
+                    createdAt: new Date().toISOString()
+                });
+                localStorage.setItem('jishaCustomers', JSON.stringify(customers));
+            }
+        }
+        
+        // View Bill Functions
+        function viewBillDetails(billId) {
+            const bill = bills.find(b => b.id === billId);
+            if (!bill) return;
+            
+            let servicesHTML = '';
+            let totalAmount = 0;
+            bill.services.forEach((service, index) => {
+                const serviceName = service.customName || service.name;
+                const serviceAmount = (service.qty || 1) * (service.price || service.amount);
+                totalAmount += serviceAmount;
+                servicesHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${serviceName}</td>
+                        <td>${service.qty || 1}</td>
+                        <td>₹${(service.price || service.amount).toFixed(2)}</td>
+                        <td>₹${serviceAmount.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            const html = `
+                <div class="bill-preview">
+                    <div class="bill-header">
+                        <div class="krishna-logo" style="margin: 0 auto 15px; width: 60px; height: 60px; font-size: 2rem;">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h2>${settings.businessName}</h2>
+                        <div class="subtitle">Trading & Services</div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Customer Details:</h5>
+                            <p><strong>${bill.customerName}</strong><br>
+                            Phone: ${bill.customerPhone}<br>
+                            ${bill.customerAddress || ''}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5>Bill Details:</h5>
+                            <p><strong>Invoice No:</strong> ${bill.invoiceNumber || bill.billNumber}<br>
+                            <strong>Date:</strong> ${bill.date}<br>
+                            <strong>Payment Status:</strong> <span class="badge ${bill.balance > 0 ? 'bg-warning' : 'bg-success'}">${bill.balance > 0 ? 'Pending' : 'Paid'}</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Item</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>${servicesHTML}</tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Subtotal</strong></td>
+                                    <td><strong>₹${bill.subtotal.toFixed(2)}</strong></td>
+                                </tr>
+                                ${bill.discount > 0 ? `
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Discount</strong></td>
+                                    <td>- ₹${bill.discount.toFixed(2)}</td>
+                                </tr>` : ''}
+                                ${bill.tax > 0 ? `
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Tax (${bill.tax}%)</strong></td>
+                                    <td>₹${(bill.taxAmount || 0).toFixed(2)}</td>
+                                </tr>` : ''}
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Total Amount</strong></td>
+                                    <td><strong>₹${bill.total.toFixed(2)}</strong></td>
+                                </tr>
+                                ${bill.advance > 0 ? `
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Advance Paid</strong></td>
+                                    <td>- ₹${bill.advance.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Balance Due</strong></td>
+                                    <td><strong>₹${bill.balance.toFixed(2)}</strong></td>
+                                </tr>` : ''}
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    ${bill.notes ? `
+                    <div class="alert alert-light mb-4">
+                        <h6>Notes:</h6>
+                        <p class="mb-0">${bill.notes}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="krishna-footer">
+                        <p class="mb-0">${settings.footerNote}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('viewBillContent').innerHTML = html;
+            const modal = new bootstrap.Modal(document.getElementById('viewBillModal'));
+            modal.show();
+        }
+        
+        // Preview and Print Functions
+        function previewBill() {
+            const billData = getBillFormData();
+            if (!validateBill(billData)) return;
+            
+            currentBill = billData;
+            
+            const billHTML = generateBillHTML(billData);
+            document.getElementById('billToPrint').innerHTML = billHTML;
+            
+            const modal = new bootstrap.Modal(document.getElementById('billPreviewModal'));
+            modal.show();
+        }
+        
+        function generateBillHTML(bill) {
+            let servicesHTML = '';
+            bill.services.forEach((service, index) => {
+                const serviceName = service.customName || service.name;
+                servicesHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${serviceName}</td>
+                        <td class="text-center">${service.qty || 1}</td>
+                        <td class="text-end">₹${(service.price || service.amount).toFixed(2)}</td>
+                        <td class="text-end">₹${((service.qty || 1) * (service.price || service.amount)).toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            return `
+                <div class="bill-preview">
+                    <div class="bill-header">
+                        <div class="krishna-logo" style="margin: 0 auto 15px; width: 60px; height: 60px; font-size: 2rem;">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <h2>${settings.businessName}</h2>
+                        <div class="subtitle">Trading & Services</div>
+                        <div class="mt-2">
+                            <strong>Contact:</strong> ${settings.businessPhone}<br>
+                            ${settings.businessAddress ? `<strong>Address:</strong> ${settings.businessAddress}<br>` : ''}
+                            ${settings.gstNumber ? `<strong>GST:</strong> ${settings.gstNumber}` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Bill To:</h5>
+                            <p><strong>${bill.customerName}</strong><br>
+                            Phone: ${bill.customerPhone}<br>
+                            ${bill.customerAddress || ''}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5>Invoice Details</h5>
+                            <p><strong>Invoice No:</strong> ${bill.invoiceNumber}<br>
+                            <strong>Date:</strong> ${bill.date}<br>
+                            <strong>Payment:</strong> ${bill.paymentMethod}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered">
+                            <thead style="background: #f8fafc;">
+                                <tr>
+                                    <th width="5%">#</th>
+                                    <th>Item Description</th>
+                                    <th width="10%" class="text-center">Qty</th>
+                                    <th width="15%" class="text-end">Price</th>
+                                    <th width="15%" class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>${servicesHTML}</tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Subtotal</strong></td>
+                                    <td class="text-end">₹${bill.subtotal.toFixed(2)}</td>
+                                </tr>
+                                ${bill.discount > 0 ? `
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Discount</strong></td>
+                                    <td class="text-end">- ₹${bill.discount.toFixed(2)}</td>
+                                </tr>` : ''}
+                                ${bill.tax > 0 ? `
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Tax (${bill.tax}%)</strong></td>
+                                    <td class="text-end">₹${bill.taxAmount.toFixed(2)}</td>
+                                </tr>` : ''}
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Total Amount</strong></td>
+                                    <td class="text-end"><strong>₹${bill.total.toFixed(2)}</strong></td>
+                                </tr>
+                                ${bill.advance > 0 ? `
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Advance Paid</strong></td>
+                                    <td class="text-end">- ₹${bill.advance.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Balance Due</strong></td>
+                                    <td class="text-end"><strong>₹${bill.balance.toFixed(2)}</strong></td>
+                                </tr>` : ''}
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    ${bill.notes ? `
+                    <div class="alert alert-light mb-4">
+                        <h6>Notes:</h6>
+                        <p class="mb-0">${bill.notes}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="mb-4">
+                        <h6>Terms & Conditions:</h6>
+                        <p style="white-space: pre-line; font-size: 0.9rem;">${settings.terms}</p>
+                    </div>
+                    
+                    <div class="krishna-footer">
+                        <p class="mb-1">${settings.footerNote}</p>
+                        <p class="mb-0"><strong>Jisha Enterprise</strong></p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function printBill() {
+            const printContent = document.getElementById('billToPrint').innerHTML;
+            const originalContent = document.body.innerHTML;
+            
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            location.reload();
+        }
+        
+        async function downloadBillPDF() {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('billToPrint');
+            
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 190;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            
+            doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            doc.save(`${currentBill.invoiceNumber}.pdf`);
+        }
+        
+        async function downloadBillPDFById(billId) {
+            const bill = bills.find(b => b.id === billId);
+            if (!bill) return;
+            
+            const { jsPDF } = window.jspdf;
+            
+            // Create a temporary container to render the bill
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = generateBillHTML(bill);
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            document.body.appendChild(tempDiv);
+            
+            const canvas = await html2canvas(tempDiv, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 190;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            
+            doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+            doc.save(`${bill.invoiceNumber}.pdf`);
+            
+            document.body.removeChild(tempDiv);
+        }
+        
+        function sendBillToCustomer() {
+            if (!currentBill || !currentBill.customerPhone) {
+                alert('No customer phone available');
+                return;
+            }
+            
+            const message = `Dear ${currentBill.customerName}, your invoice ${currentBill.invoiceNumber} for ₹${currentBill.total} is ready. Thank you for choosing Jisha Enterprise!`;
+            const whatsappLink = `https://wa.me/91${currentBill.customerPhone}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappLink, '_blank');
+        }
+        
+        function sendBillToCustomerById(billId) {
+            const bill = bills.find(b => b.id === billId);
+            if (!bill || !bill.customerPhone) {
+                alert('No customer phone available');
+                return;
+            }
+            
+            const message = `Dear ${bill.customerName}, your invoice ${bill.invoiceNumber} for ₹${bill.total} is ready. Thank you for choosing Jisha Enterprise!`;
+            const whatsappLink = `https://wa.me/91${bill.customerPhone}?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappLink, '_blank');
+        }
+        
+        // Profit & Loss Report Functions
+        function showDailyReport() {
+            const dailyData = getDailyProfitData();
+            renderProfitChart(dailyData, 'date');
+            renderReportTable(dailyData, 'date');
+            updateReportSummary(dailyData);
+            
+            document.getElementById('reportPeriodHeader').textContent = 'Date';
+        }
+        
+        function showMonthlyReport() {
+            const monthlyData = getMonthlyProfitData();
+            renderProfitChart(monthlyData, 'month');
+            renderReportTable(monthlyData, 'month');
+            updateReportSummary(monthlyData);
+            
+            document.getElementById('reportPeriodHeader').textContent = 'Month';
+        }
+        
+        function getDailyProfitData() {
+            const dailyData = {};
+            
+            bills.forEach(bill => {
+                if (!dailyData[bill.date]) {
+                    dailyData[bill.date] = {
+                        revenue: 0,
+                        cost: 0,
+                        profit: 0,
+                        bills: []
+                    };
+                }
+                
+                dailyData[bill.date].revenue += bill.total;
+                dailyData[bill.date].cost += bill.cost || (bill.total * 0.6);
+                dailyData[bill.date].profit += bill.profit || (bill.total * 0.4);
+                dailyData[bill.date].bills.push(bill);
+            });
+            
+            // Convert to array and sort by date
+            return Object.keys(dailyData)
+                .map(date => ({
+                    date,
+                    revenue: dailyData[date].revenue,
+                    cost: dailyData[date].cost,
+                    profit: dailyData[date].profit,
+                    margin: dailyData[date].revenue > 0 ? 
+                        ((dailyData[date].profit / dailyData[date].revenue) * 100).toFixed(1) : 0,
+                    bills: dailyData[date].bills
+                }))
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+        }
+        
+        function getMonthlyProfitData() {
+            const monthlyData = {};
+            
+            bills.forEach(bill => {
+                const date = new Date(bill.date);
+                const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                const monthName = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+                
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = {
+                        month: monthName,
+                        revenue: 0,
+                        cost: 0,
+                        profit: 0,
+                        bills: []
+                    };
+                }
+                
+                monthlyData[monthKey].revenue += bill.total;
+                monthlyData[monthKey].cost += bill.cost || (bill.total * 0.6);
+                monthlyData[monthKey].profit += bill.profit || (bill.total * 0.4);
+                monthlyData[monthKey].bills.push(bill);
+            });
+            
+            // Convert to array and sort by month
+            return Object.keys(monthlyData)
+                .map(key => ({
+                    month: monthlyData[key].month,
+                    revenue: monthlyData[key].revenue,
+                    cost: monthlyData[key].cost,
+                    profit: monthlyData[key].profit,
+                    margin: monthlyData[key].revenue > 0 ? 
+                        ((monthlyData[key].profit / monthlyData[key].revenue) * 100).toFixed(1) : 0,
+                    bills: monthlyData[key].bills
+                }))
+                .sort((a, b) => {
+                    const [aMonth, aYear] = a.month.split(' ');
+                    const [bMonth, bYear] = b.month.split(' ');
+                    return new Date(`${aMonth} 1, ${aYear}`) - new Date(`${bMonth} 1, ${bYear}`);
+                });
+        }
+        
+        function renderProfitChart(data, labelKey) {
+            const ctx = document.getElementById('profitChart');
+            if (!ctx) return;
+            
+            // Destroy existing chart
+            if (window.profitChartInstance) {
+                window.profitChartInstance.destroy();
+            }
+            
+            const labels = data.map(item => item[labelKey]);
+            const revenue = data.map(item => item.revenue);
+            const cost = data.map(item => item.cost);
+            const profit = data.map(item => item.profit);
+            
+            window.profitChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: revenue,
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Cost',
+                            data: cost,
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Profit',
+                            data: profit,
+                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            type: 'line',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString('en-IN');
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderReportTable(data, labelKey) {
+            let html = '';
+            
+            data.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item[labelKey]}</td>
+                        <td>₹${item.revenue.toLocaleString('en-IN')}</td>
+                        <td>₹${item.cost.toLocaleString('en-IN')}</td>
+                        <td>₹${item.profit.toLocaleString('en-IN')}</td>
+                        <td>${item.margin}%</td>
+                        <td>
+                            <i class="fas fa-eye eye-icon" 
+                               onclick="showProfitLossDetails('${item[labelKey]}', '${labelKey}')"
+                               title="Click to view detailed amounts"></i>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('reportTableBody').innerHTML = html;
+        }
+        
+        function showProfitLossDetails(period, type) {
+            let filteredBills = [];
+            let periodTitle = '';
+            
+            if (type === 'date') {
+                filteredBills = bills.filter(bill => bill.date === period);
+                periodTitle = `Daily Report - ${period}`;
+            } else {
+                const [monthName, year] = period.split(' ');
+                const monthNum = new Date(`${monthName} 1, ${year}`).getMonth() + 1;
+                filteredBills = bills.filter(bill => {
+                    const billDate = new Date(bill.date);
+                    return billDate.getMonth() + 1 === monthNum && billDate.getFullYear() == year;
+                });
+                periodTitle = `Monthly Report - ${period}`;
+            }
+            
+            let totalRevenue = 0;
+            let totalCost = 0;
+            let totalProfit = 0;
+            
+            let billsHTML = '';
+            filteredBills.forEach(bill => {
+                const profit = bill.profit || (bill.total * 0.4);
+                totalRevenue += bill.total;
+                totalCost += bill.cost || (bill.total * 0.6);
+                totalProfit += profit;
+                
+                billsHTML += `
+                    <tr>
+                        <td>${bill.invoiceNumber || bill.billNumber}</td>
+                        <td>${bill.customerName}</td>
+                        <td>${bill.services.map(s => s.customName || s.name).join(', ')}</td>
+                        <td class="text-end">₹${bill.total.toLocaleString('en-IN')}</td>
+                        <td class="text-end">₹${Math.round(profit).toLocaleString('en-IN')}</td>
+                        <td class="text-end">${((profit / bill.total) * 100).toFixed(1)}%</td>
+                    </tr>
+                `;
+            });
+            
+            const html = `
+                <h5>${periodTitle}</h5>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6>Total Revenue</h6>
+                                <h3 class="text-success">₹${totalRevenue.toLocaleString('en-IN')}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6>Total Cost</h6>
+                                <h3 class="text-danger">₹${totalCost.toLocaleString('en-IN')}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6>Net Profit</h6>
+                                <h3 class="text-primary">₹${totalProfit.toLocaleString('en-IN')}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Invoice No</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th class="text-end">Amount</th>
+                                <th class="text-end">Profit</th>
+                                <th class="text-end">Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody>${billsHTML}</tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td class="text-end"><strong>₹${totalRevenue.toLocaleString('en-IN')}</strong></td>
+                                <td class="text-end"><strong>₹${totalProfit.toLocaleString('en-IN')}</strong></td>
+                                <td class="text-end"><strong>${totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : 0}%</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('profitLossTitle').textContent = periodTitle;
+            document.getElementById('profitLossDetails').innerHTML = html;
+            
+            const modal = new bootstrap.Modal(document.getElementById('profitLossDetailsModal'));
+            modal.show();
+        }
+        
+        function updateReportSummary(data) {
+            let totalRevenue = 0;
+            let totalCost = 0;
+            let totalProfit = 0;
+            
+            data.forEach(item => {
+                totalRevenue += item.revenue;
+                totalCost += item.cost;
+                totalProfit += item.profit;
+            });
+            
+            const profitMargin = totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : 0;
+            
+            document.getElementById('reportTotalRevenue').textContent = `₹${totalRevenue.toLocaleString('en-IN')}`;
+            document.getElementById('reportTotalCost').textContent = `₹${totalCost.toLocaleString('en-IN')}`;
+            document.getElementById('reportNetProfit').textContent = `₹${totalProfit.toLocaleString('en-IN')}`;
+            document.getElementById('reportProfitMargin').textContent = `${profitMargin}%`;
+        }
+        
+        // Export Functions
+        function downloadReport(format) {
+            if (format === 'pdf') {
+                downloadProfitLossPDF();
+            } else {
+                downloadProfitLossExcel();
+            }
+        }
+        
+        function downloadProfitLossPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add title
+            doc.setFontSize(16);
+            doc.setTextColor(30, 64, 175);
+            doc.text('Jisha Enterprise - Profit & Loss Report', 105, 15, null, null, 'center');
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 105, 25, null, null, 'center');
+            
+            // Get report data
+            const dailyData = getDailyProfitData();
+            const monthlyData = getMonthlyProfitData();
+            
+            // Add daily summary
+            let yPos = 40;
+            doc.setFontSize(14);
+            doc.text('Daily Summary:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            dailyData.slice(-7).forEach(item => {
+                doc.text(`${item.date}: Revenue: ₹${item.revenue.toLocaleString('en-IN')}, Profit: ₹${item.profit.toLocaleString('en-IN')}`, 25, yPos);
+                yPos += 7;
+                if (yPos > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            });
+            
+            // Add monthly summary
+            yPos += 10;
+            doc.setFontSize(14);
+            doc.text('Monthly Summary:', 20, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            monthlyData.forEach(item => {
+                doc.text(`${item.month}: Revenue: ₹${item.revenue.toLocaleString('en-IN')}, Profit: ₹${item.profit.toLocaleString('en-IN')}`, 25, yPos);
+                yPos += 7;
+                if (yPos > 280) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            });
+            
+            // Save PDF
+            doc.save(`jisha-profit-loss-${new Date().toISOString().split('T')[0]}.pdf`);
+        }
+        
+        function downloadProfitLossExcel() {
+            const dailyData = getDailyProfitData();
+            const monthlyData = getMonthlyProfitData();
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Daily data worksheet
+            const dailyWSData = [
+                ['Date', 'Revenue (₹)', 'Cost (₹)', 'Profit (₹)', 'Margin (%)']
+            ];
+            
+            dailyData.forEach(item => {
+                dailyWSData.push([
+                    item.date,
+                    item.revenue,
+                    item.cost,
+                    item.profit,
+                    item.margin
+                ]);
+            });
+            
+            const dailyWS = XLSX.utils.aoa_to_sheet(dailyWSData);
+            XLSX.utils.book_append_sheet(wb, dailyWS, 'Daily Report');
+            
+            // Monthly data worksheet
+            const monthlyWSData = [
+                ['Month', 'Revenue (₹)', 'Cost (₹)', 'Profit (₹)', 'Margin (%)']
+            ];
+            
+            monthlyData.forEach(item => {
+                monthlyWSData.push([
+                    item.month,
+                    item.revenue,
+                    item.cost,
+                    item.profit,
+                    item.margin
+                ]);
+            });
+            
+            const monthlyWS = XLSX.utils.aoa_to_sheet(monthlyWSData);
+            XLSX.utils.book_append_sheet(wb, monthlyWS, 'Monthly Report');
+            
+            // Export to Excel
+            XLSX.writeFile(wb, `jisha-profit-loss-${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+        
+        function exportBillsToExcel() {
+            const wsData = [
+                ['Invoice No', 'Date', 'Customer Name', 'Phone', 'Items', 'Subtotal', 'Discount', 'Tax', 'Total', 'Advance', 'Balance', 'Payment Method', 'Payment Status']
+            ];
+            
+            bills.forEach(bill => {
+                wsData.push([
+                    bill.invoiceNumber || bill.billNumber,
+                    bill.date,
+                    bill.customerName,
+                    bill.customerPhone,
+                    bill.services.map(s => s.customName || s.name).join('; '),
+                    bill.subtotal,
+                    bill.discount || 0,
+                    bill.taxAmount || 0,
+                    bill.total,
+                    bill.advance || 0,
+                    bill.balance,
+                    bill.paymentMethod,
+                    bill.balance > 0 ? 'Pending' : 'Paid'
+                ]);
+            });
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Bills');
+            XLSX.writeFile(wb, `jisha-bills-${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+        
+        function exportAllData() {
+            const data = {
+                bills: bills,
+                customers: customers,
+                services: services,
+                settings: settings,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', dataUri);
+            link.setAttribute('download', `jisha-backup-${new Date().toISOString().split('T')[0]}.json`);
+            link.click();
+        }
+        
+        // Settings Functions
+        function saveSettings() {
+            settings = {
+                businessName: document.getElementById('businessName').value,
+                businessPhone: document.getElementById('businessPhone').value,
+                businessAddress: document.getElementById('businessAddress').value,
+                gstNumber: document.getElementById('gstNumber').value,
+                taxRate: parseFloat(document.getElementById('taxRate').value) || 0,
+                currency: "₹",
+                footerNote: document.getElementById('footerNote').value,
+                terms: document.getElementById('terms').value
+            };
+            
+            localStorage.setItem('jishaSettings', JSON.stringify(settings));
+            alert('Settings saved successfully!');
+        }
+        
+        function resetSettings() {
+            if (confirm('Reset settings to default?')) {
+                localStorage.removeItem('jishaSettings');
+                settings = {
+                    businessName: "Jisha Enterprise",
+                    Owner: "Jisha Sharma",
+                    businessPhone: "9876543210",
+                    businessAddress: "456, Market Street, Coimbatore - 641001",
+                    gstNumber: "33AAAAA0000A1Z5",
+                    taxRate: 18,
+                    currency: "₹",
+                    footerNote: "Thank you for your business! Visit again.",
+                    terms: "1. Payment due immediately.\n2. Goods once sold cannot be returned.\n3. Warranty as per company policy."
+                };
+                alert('Settings reset to default');
+                showSettings();
+            }
+        }
+        
+        function clearAllData() {
+            if (confirm('WARNING: This will delete ALL data including bills, customers, items. Are you sure?')) {
+                localStorage.clear();
+                bills = [];
+                customers = [];
+                services = [
+                    {id: '1', name: "Product A", price: 500, cost: 300},
+                    {id: '2', name: "Product B", price: 1200, cost: 800},
+                    {id: '3', name: "Service Consultation", price: 1000, cost: 400},
+                    {id: '4', name: "Maintenance Contract", price: 3000, cost: 1500},
+                    {id: '5', name: "Spare Part X", price: 800, cost: 500},
+                    {id: '6', name: "Installation Service", price: 1500, cost: 700},
+                    {id: '7', name: "Annual Maintenance", price: 2500, cost: 1200},
+                    {id: '8', name: "Software License", price: 4000, cost: 2000},
+                    {id: '9', name: "Other (Custom)", price: 0, cost: 0},
+                    {id: '10', name: "Other item", price: 0, cost: 0}
+                ];
+                alert('All data cleared!');
+                showDashboard();
+            }
+        }
+        
+        // Other Functions
+        function loadCustomers() {
+            let html = '';
+            
+            customers.forEach(customer => {
+                const customerBills = bills.filter(b => b.customerPhone === customer.phone);
+                const totalAmount = customerBills.reduce((sum, bill) => sum + bill.total, 0);
+                
+                html += `
+                    <tr>
+                        <td>${customer.name}</td>
+                        <td>${customer.phone}</td>
+                        <td>${customer.email || '-'}</td>
+                        <td>${customer.address ? customer.address.substring(0, 30) + '...' : '-'}</td>
+                        <td>${customerBills.length}</td>
+                        <td class="amount-display">₹${totalAmount.toLocaleString('en-IN')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info me-1" onclick="viewCustomerBills('${customer.id}')" title="View Bills">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('customersBody').innerHTML = html;
+        }
+        
+        function loadServices() {
+            let html = '';
+            let totalRevenue = 0;
+            let totalCost = 0;
+            let totalProfit = 0;
+            
+            services.forEach(service => {
+                const profit = service.price - service.cost;
+                totalRevenue += service.price;
+                totalCost += service.cost;
+                totalProfit += profit;
+                
+                html += `
+                    <tr>
+                        <td>${service.name}</td>
+                        <td class="amount-display">₹${service.price.toLocaleString('en-IN')}</td>
+                        <td class="amount-display">₹${service.cost.toLocaleString('en-IN')}</td>
+                        <td class="amount-display">₹${profit.toLocaleString('en-IN')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning me-1" onclick="editService('${service.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteService('${service.id}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('servicesBody').innerHTML = html;
+            
+            // Update service stats
+            document.getElementById('serviceStats').innerHTML = `
+                <h6>Item Statistics</h6>
+                <div class="mt-3">
+                    <p><strong>Total Items:</strong> ${services.length}</p>
+                    <p><strong>Average Price:</strong> <span class="amount-display">₹${Math.round(totalRevenue / services.length).toLocaleString('en-IN')}</span></p>
+                    <p><strong>Total Revenue Potential:</strong> <span class="amount-display">₹${totalRevenue.toLocaleString('en-IN')}</span></p>
+                    <p><strong>Total Cost:</strong> <span class="amount-display">₹${totalCost.toLocaleString('en-IN')}</span></p>
+                    <p><strong>Total Profit:</strong> <span class="amount-display">₹${totalProfit.toLocaleString('en-IN')}</span></p>
+                    <p><strong>Average Profit Margin:</strong> ${((totalProfit / totalRevenue) * 100).toFixed(1)}%</p>
+                </div>
+            `;
+        }
+        
+        function addCustomer() {
+            const name = prompt('Enter customer name:');
+            if (!name) return;
+            
+            const phone = prompt('Enter phone number:');
+            if (!phone) return;
+            
+            const email = prompt('Enter email (optional):');
+            const address = prompt('Enter address (optional):');
+            
+            customers.push({
+                id: Date.now().toString(),
+                name: name,
+                phone: phone,
+                email: email || '',
+                address: address || '',
+                createdAt: new Date().toISOString()
+            });
+            
+            localStorage.setItem('jishaCustomers', JSON.stringify(customers));
+            alert('Customer added!');
+            showCustomers();
+        }
+        
+        function addService() {
+            const name = prompt('Enter item name:');
+            if (!name) return;
+            
+            const price = parseFloat(prompt('Enter item price (₹):'));
+            if (isNaN(price)) return;
+            
+            const cost = parseFloat(prompt('Enter item cost (₹):')) || price * 0.6;
+            
+            services.push({
+                id: Date.now().toString(),
+                name: name,
+                price: price,
+                cost: cost
+            });
+            
+            localStorage.setItem('jishaServices', JSON.stringify(services));
+            alert('Item added!');
+            showServices();
+        }
+        
+        function editService(serviceId) {
+            const service = services.find(s => s.id === serviceId);
+            if (!service) return;
+            
+            const name = prompt('Edit item name:', service.name);
+            if (name === null) return;
+            
+            const price = parseFloat(prompt('Edit price (₹):', service.price));
+            if (isNaN(price)) return;
+            
+            const cost = parseFloat(prompt('Edit cost (₹):', service.cost));
+            
+            service.name = name;
+            service.price = price;
+            service.cost = cost;
+            
+            localStorage.setItem('jishaServices', JSON.stringify(services));
+            alert('Item updated!');
+            showServices();
+        }
+        
+        function deleteService(serviceId) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                services = services.filter(s => s.id !== serviceId);
+                localStorage.setItem('jishaServices', JSON.stringify(services));
+                alert('Item deleted!');
+                showServices();
+            }
+        }
+        
+        function viewCustomerBills(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            if (!customer) return;
+            
+            const customerBills = bills.filter(b => b.customerPhone === customer.phone);
+            
+            let html = `<h4>Bills for ${customer.name}</h4>`;
+            
+            if (customerBills.length === 0) {
+                html += '<p>No bills found for this customer.</p>';
+            } else {
+                html += '<ul class="list-group">';
+                customerBills.forEach(bill => {
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${bill.invoiceNumber || bill.billNumber} - ${bill.date}
+                            <span class="badge bg-primary rounded-pill">₹${bill.total.toLocaleString('en-IN')}</span>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+            }
+            
+            document.getElementById('contentArea').innerHTML = `
+                <button class="btn btn-secondary mb-3" onclick="showCustomers()">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                ${html}
+            `;
+        }
+        
+        // Close theme options when clicking outside
+        document.addEventListener('click', function(event) {
+            const themeOptions = document.getElementById('themeOptions');
+            const themeBtn = document.querySelector('.theme-btn');
+            
+            if (themeOptions && themeBtn && 
+                !themeOptions.contains(event.target) && 
+                !themeBtn.contains(event.target)) {
+                themeOptions.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
